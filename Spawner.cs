@@ -6,31 +6,51 @@ namespace StereoKitUtilities
 {
     class Spawner
     {
-        public Model _model, _recentSpawn;
+        public Model _model;
         public  List<Model> _spawnees = new List<Model>();
         public double _spawnTime;
         double  _timer;
-        public bool _spawning = false;
+        Matrix _transform;
 
-        public Spawner()
+        public Spawner(Matrix transform)
         {
+            _transform = transform;
         }
 
-        public Spawner(Model model, double spawnTime)
+        public Spawner(Matrix transform, Model model, double spawnTime)
         {
+            _transform = transform;
             _model = model;
             _spawnTime = spawnTime;
         }
 
+        public void SetTransform(Matrix transform)
+        {
+            _transform = transform;
+        }
+
+        public Matrix GetTransform()
+        {
+            return _transform;
+        }
+        
         public Model Spawn(Model model = null)
         {
             Model spawnee;
 
             if (model != null)
+            {
+                model.SetTransform(0, _transform);
                 spawnee = Clone.Duplicate(ref model);
+            }
             else
+            {
+                _model.SetTransform(0, _transform);
                 spawnee = Clone.Duplicate(ref _model);
-            _spawnees.Add(spawnee);
+            }
+
+            if (spawnee != null)
+                _spawnees.Add(spawnee);
 
             return spawnee;
         }
@@ -44,15 +64,13 @@ namespace StereoKitUtilities
 
         public void Update()
         {
-            _spawning = false;
             _timer += Time.Elapsed;
             if (_spawnTime > 0 && _timer >= _spawnTime)
             {
-                _spawning = true;
                 _timer = 0;
-                _recentSpawn = Spawn();
+                Spawn();
             }
-            _model.Draw(Matrix.Identity);
+            _spawnees.ForEach((spawn) => { spawn.Draw(Matrix.Identity); });
         }
     }
 }

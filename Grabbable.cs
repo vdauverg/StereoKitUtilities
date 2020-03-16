@@ -112,7 +112,7 @@ namespace StereoKitUtilities
 				}
 			}
 			_bounds.center = _position; // Update the position of the models boundary
-			_model.Draw(Matrix.TS(_position, 0.1f), _color); // Draw the model at its new position
+			_model.Draw(Matrix.T(_position), _color); // Draw the model at its new position
 		}
 	}
 }
