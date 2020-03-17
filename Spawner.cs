@@ -8,6 +8,7 @@ namespace StereoKitUtilities
     {
         public Model _model;
         public  List<Model> _spawnees = new List<Model>();
+        public  List<Model> _despawnQueue = new List<Model>();
         public double _spawnTime;
         double  _timer;
         Matrix _transform;
@@ -54,6 +55,12 @@ namespace StereoKitUtilities
 
             return spawnee;
         }
+
+        public void QueueDespawn(Model model)
+        {
+            _despawnQueue.Add(model);
+        }
+
         public void Despawn(Model model = null)
         {
             if (model != null)
@@ -70,6 +77,14 @@ namespace StereoKitUtilities
                 _timer = 0;
                 Spawn();
             }
+
+            _despawnQueue.ForEach((spawn) =>
+            {
+                _spawnees.Remove(spawn);
+            });
+
+            _despawnQueue.RemoveRange(0, _despawnQueue.Count);
+
             _spawnees.ForEach((spawn) => { spawn.Draw(Matrix.Identity); });
         }
     }
